@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  slack-bot:
+    build: .
+    env_file:
+      - .env # This tells Docker Compose to load environment variables from .env
+    volumes:
+      - .:/app # Mounts the current directory to /app in the container (optional)
+    ports:
+      - "5000:5000" # Optional: Exposing the port (not necessary for Socket Mode)
+    restart: always # Restart container on failure or restart
