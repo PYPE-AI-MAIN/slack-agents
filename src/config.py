@@ -14,14 +14,16 @@ logger = logging.getLogger(__name__)
 class Config:
     def __init__(self):
         load_dotenv()
-        
+
         # Required environment variables
         self.SLACK_BOT_TOKEN = os.getenv('SLACK_BOT_TOKEN')
         self.SLACK_APP_TOKEN = os.getenv('SLACK_APP_TOKEN')
-        
+
         # Google Calendar credentials
-        # Get the JSON content from the environment variable
         credentials_content = os.getenv("GOOGLE_CREDENTIALS_JSON")
+        if not credentials_content:
+            logger.error("Google credentials are missing in the environment variables.")
+            raise ValueError("GOOGLE_CREDENTIALS_JSON not found in environment variables")
 
         # Load the JSON string into a Python dictionary
         credentials_dict = json.loads(credentials_content)
@@ -31,15 +33,17 @@ class Config:
             json.dump(credentials_dict, f, indent=4)
 
         self.GOOGLE_CREDENTIALS_FILE = './credentials.json'
+        logger.info(f"Google credentials loaded: {self.GOOGLE_CREDENTIALS_FILE}")
+
         # Create necessary directories
         self.USER_TOKENS_DIR = Path('user_tokens')
         self.USER_TOKENS_DIR.mkdir(exist_ok=True)
-        
+
         # Open AI credentials
         self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
         self._validate_config()
-    
+
     def _validate_config(self):
         """Validate all required configurations are present."""
         if not self.SLACK_BOT_TOKEN:

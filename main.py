@@ -40,7 +40,10 @@ def oauth2callback():
         # Get the credentials using the code from the URL
         credentials = flow.fetch_token(authorization_response=request.url)
 
-        # Save the credentials (you can store them in a database, file, etc.)
+        # Log credentials details for debugging
+        logger.info(f"Received credentials: {credentials.to_json()}")
+
+        # Save the credentials
         token_data = {
             'token': credentials.token,
             'refresh_token': credentials.refresh_token,
@@ -50,7 +53,7 @@ def oauth2callback():
             'scopes': credentials.scopes
         }
 
-        # Save the token to a file (you can modify this to save it in a database)
+        # Save the token to a file
         with open(f'user_tokens/{credentials.client_id}_token.json', 'w') as token_file:
             json.dump(token_data, token_file)
 
@@ -60,6 +63,7 @@ def oauth2callback():
     except Exception as e:
         logger.error(f"OAuth callback failed: {e}")
         return f"Error: {e}", 500
+
 
 def setup_ssl():
     """Setup SSL configuration."""
