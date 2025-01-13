@@ -2,7 +2,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 import json
-from typing import Optional, Dict
+from typing import Optional
 import os
 from pathlib import Path
 import logging
@@ -31,7 +31,7 @@ class GoogleAuthManager:
                 self.SCOPES
             )
 
-            # Set the redirect URI here
+            # Set the redirect URI directly on the flow object
             flow.redirect_uri = self.redirect_uri
 
             # Generate the authorization URL (no need to pass redirect_uri here again)
