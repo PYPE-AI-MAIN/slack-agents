@@ -1,2 +1,5 @@
 .env
 venv/
+credentials.json
+*.json
+*.pickle
