@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 import logging
 from pathlib import Path
+import json
 
 # Configure logging
 logging.basicConfig(
@@ -19,8 +20,17 @@ class Config:
         self.SLACK_APP_TOKEN = os.getenv('SLACK_APP_TOKEN')
         
         # Google Calendar credentials
-        self.GOOGLE_CREDENTIALS_FILE = 'credentials.json'
-        
+        # Get the JSON content from the environment variable
+        credentials_content = os.getenv("GOOGLE_CREDENTIALS_JSON")
+
+        # Load the JSON string into a Python dictionary
+        credentials_dict = json.loads(credentials_content)
+
+        # Write the formatted JSON back into the file
+        with open("credentials.json", "w") as f:
+            json.dump(credentials_dict, f, indent=4)
+
+        self.GOOGLE_CREDENTIALS_FILE = './credentials.json'
         # Create necessary directories
         self.USER_TOKENS_DIR = Path('user_tokens')
         self.USER_TOKENS_DIR.mkdir(exist_ok=True)
