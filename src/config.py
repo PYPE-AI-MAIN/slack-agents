@@ -11,6 +11,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Config
 class Config:
     def __init__(self):
         load_dotenv()
