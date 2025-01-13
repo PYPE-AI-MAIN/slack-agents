@@ -7,6 +7,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 import json
 from src.services.slack_service import SlackService  # Import the SlackService
+from src.config import config  # Import your config for environment variables
 
 # Configure logging
 logging.basicConfig(
@@ -32,13 +33,13 @@ def oauth2callback():
     try:
         # Initialize the OAuth flow
         flow = InstalledAppFlow.from_client_secrets_file(
-            'credentials.json',  # Path to your credentials
+            config.GOOGLE_CREDENTIALS_FILE,  # Use the credentials path from config
             SCOPES
         )
 
         # Get the credentials using the code from the URL
         credentials = flow.fetch_token(authorization_response=request.url)
-        
+
         # Save the credentials (you can store them in a database, file, etc.)
         token_data = {
             'token': credentials.token,
@@ -50,7 +51,7 @@ def oauth2callback():
         }
 
         # Save the token to a file (you can modify this to save it in a database)
-        with open('user_tokens.json', 'w') as token_file:
+        with open(f'user_tokens/{credentials.client_id}_token.json', 'w') as token_file:
             json.dump(token_data, token_file)
 
         logger.info("OAuth flow completed successfully and credentials saved.")
@@ -75,7 +76,7 @@ def main():
 
         # Start the bot (ensure your SlackService is correctly configured)
         logger.info("Starting Slack bot...")
-        
+
         slack_service = SlackService()  # Initialize the Slack service
         slack_service.start()
         logger.info("Slack bot is running!")
