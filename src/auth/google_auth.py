@@ -8,6 +8,7 @@ from pathlib import Path
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class GoogleAuthManager:
     def __init__(self):
@@ -30,6 +31,9 @@ class GoogleAuthManager:
                 self.credentials_path,
                 self.SCOPES
             )
+
+            # Log the redirect URI to ensure it's set correctly
+            logger.info(f"Using redirect URI: {self.redirect_uri}")
 
             # Set the redirect URI directly on the flow object
             flow.redirect_uri = self.redirect_uri
