@@ -2,11 +2,10 @@ import logging
 import ssl
 import certifi
 import os
-from src.services.slack_service import SlackService
-from src.config import config
-from flask import Flask, request
+from flask import Flask, request, redirect
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
+import json
 
 # Configure logging
 logging.basicConfig(
@@ -18,7 +17,10 @@ logger = logging.getLogger(__name__)
 # Initialize Flask for OAuth handling
 app = Flask(__name__)
 
-# Google OAuth callback URL
+# Define the OAuth scopes
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+# OAuth callback URL
 @app.route('/oauth2callback')
 def oauth2callback():
     """Handle OAuth callback."""
@@ -30,15 +32,27 @@ def oauth2callback():
         # Initialize the OAuth flow
         flow = InstalledAppFlow.from_client_secrets_file(
             'credentials.json',  # Path to your credentials
-            ['https://www.googleapis.com/auth/calendar']
+            SCOPES
         )
 
         # Get the credentials using the code from the URL
         credentials = flow.fetch_token(authorization_response=request.url)
         
-        # Save or use the credentials here
-        # This is where you'd save the credentials to a file, database, etc.
-        logger.info(f"OAuth flow completed successfully for code: {code}")
+        # Save the credentials (you can store them in a database, file, etc.)
+        token_data = {
+            'token': credentials.token,
+            'refresh_token': credentials.refresh_token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': credentials.scopes
+        }
+
+        # Save the token to a file (you can modify this to save it in a database)
+        with open('user_tokens.json', 'w') as token_file:
+            json.dump(token_data, token_file)
+
+        logger.info("OAuth flow completed successfully and credentials saved.")
         
         return "Authorization successful!"
     except Exception as e:
@@ -58,14 +72,14 @@ def main():
         ssl_context = setup_ssl()
         logger.info("SSL configuration completed")
 
-        # Start the bot
+        # Start the bot (ensure your SlackService is correctly configured)
         logger.info("Starting Slack bot...")
         
         slack_service = SlackService()
         slack_service.start()
         logger.info("Slack bot is running!")
 
-        # Start Flask server for OAuth callback handling
+        # Start Flask server for OAuth callback handling (on port 8080)
         app.run(host='0.0.0.0', port=8080, ssl_context=ssl_context)  # Use SSL if required
 
     except Exception as e:
