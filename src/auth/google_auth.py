@@ -16,6 +16,12 @@ class GoogleAuthManager:
         self.tokens_dir = Path('user_tokens')
         self.tokens_dir.mkdir(exist_ok=True)
         self.credentials_path = 'credentials.json'
+        
+        # Set the redirect URI based on environment
+        if os.environ.get('RAILWAY_ENV', '') == 'production':
+            self.redirect_uri = os.environ.get('PROD_REDIRECT_URI')  # Real redirect URI for production
+        else:
+            self.redirect_uri = 'http://localhost:3000/oauth2callback'  # Local/Development redirect URI
 
     def get_auth_url(self, slack_user_id: str) -> str:
         """Generate OAuth URL for user authorization."""
@@ -25,8 +31,11 @@ class GoogleAuthManager:
                 self.SCOPES
             )
 
-            # Generate the authorization URL without starting the local server
-            auth_url, _ = flow.authorization_url(prompt='consent')
+            # Generate the authorization URL
+            auth_url, _ = flow.authorization_url(
+                prompt='consent',
+                redirect_uri=self.redirect_uri
+            )
 
             # Return the URL for the user to visit
             return f"Please go to this URL and authorize the application: {auth_url}"
@@ -90,3 +99,4 @@ class GoogleAuthManager:
         except Exception as e:
             logger.error(f"Error saving credentials: {e}")
             raise
+
