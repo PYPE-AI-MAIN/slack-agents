@@ -24,20 +24,13 @@ class GoogleAuthManager:
                 self.credentials_path,
                 self.SCOPES
             )
-            
-            # Initialize the local server flow
-            flow.run_local_server(port=0)
-            
-            # Get credentials from the flow
-            credentials = flow.credentials
-            
-            # Save the credentials
-            if credentials:
-                self._save_user_credentials(slack_user_id, credentials)
-                return "Authentication successful! You can now schedule meetings."
-            
-            return flow.authorization_url()[0]
-            
+
+            # Generate the authorization URL without starting the local server
+            auth_url, _ = flow.authorization_url(prompt='consent')
+
+            # Return the URL for the user to visit
+            return f"Please go to this URL and authorize the application: {auth_url}"
+
         except Exception as e:
             logger.error(f"Error generating auth URL: {e}")
             raise
