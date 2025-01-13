@@ -6,6 +6,7 @@ from flask import Flask, request, redirect
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 import json
+from src.services.slack_service import SlackService  # Import the SlackService
 
 # Configure logging
 logging.basicConfig(
@@ -75,7 +76,7 @@ def main():
         # Start the bot (ensure your SlackService is correctly configured)
         logger.info("Starting Slack bot...")
         
-        slack_service = SlackService()
+        slack_service = SlackService()  # Initialize the Slack service
         slack_service.start()
         logger.info("Slack bot is running!")
 
