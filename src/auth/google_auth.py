@@ -31,11 +31,11 @@ class GoogleAuthManager:
                 self.SCOPES
             )
 
-            # Generate the authorization URL
-            auth_url, _ = flow.authorization_url(
-                prompt='consent',
-                redirect_uri=self.redirect_uri
-            )
+            # Set the redirect URI here
+            flow.redirect_uri = self.redirect_uri
+
+            # Generate the authorization URL (no need to pass redirect_uri here again)
+            auth_url, _ = flow.authorization_url(prompt='consent')
 
             # Return the URL for the user to visit
             return f"Please go to this URL and authorize the application: {auth_url}"
@@ -99,4 +99,3 @@ class GoogleAuthManager:
         except Exception as e:
             logger.error(f"Error saving credentials: {e}")
             raise
-
