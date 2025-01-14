@@ -22,7 +22,7 @@ class GoogleAuthManager:
         if os.environ.get('ENVIRONMENT', '') == 'production':
             self.redirect_uri = os.environ.get('PROD_REDIRECT_URI')  # Real redirect URI for production
         else:
-            self.redirect_uri = 'http://localhost:3000/oauth2callback'  # Local/Development redirect URI
+            self.redirect_uri = 'https://localhost:8080/oauth2callback'  # Local/Development redirect URI
 
     def get_auth_url(self, slack_user_id: str) -> str:
         """Generate OAuth URL for user authorization."""

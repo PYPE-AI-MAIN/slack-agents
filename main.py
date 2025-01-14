@@ -69,6 +69,7 @@ def setup_ssl():
     """Setup SSL configuration."""
     os.environ['SSL_CERT_FILE'] = certifi.where()
     ssl_context = ssl.create_default_context(cafile=certifi.where())
+    # ssl_context = ("cert.pem", "key.pem")
     return ssl_context
 
 def main():
@@ -86,7 +87,7 @@ def main():
         logger.info("Slack bot is running!")
 
         # Start Flask server for OAuth callback handling (on port 8080)
-        app.run(host='0.0.0.0', port=8080, ssl_context=ssl_context)  # Use SSL if required
+        app.run(host='localhost', port=8080, ssl_context=ssl_context)  # Use SSL if required
 
     except Exception as e:
         logger.error(f"Failed to start bot: {e}")
